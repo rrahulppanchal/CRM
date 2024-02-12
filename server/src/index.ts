@@ -1,9 +1,36 @@
-const addition = (a: number, b: number) => {
-  return a + b;
-};
+import express from "express";
+import { expressMiddleware } from "@apollo/server/express4";
+import createApolloGraphqlServer from "./graphql";
+import UserService from "./services/user";
 
-const number1 = 5;
-const number2 = 10;
-const result = addition(number1, number2);
+async function init() {
+  const app = express();
+  const PORT = Number(process.env.PORT) || 8000;
 
-console.log('The result is %d', result);
+  app.use(express.json());
+
+  app.get("/", (req, res) => {
+    res.json({ message: "Server is up and running" });
+  });
+
+  app.use(
+    "/graphql",
+    expressMiddleware(await createApolloGraphqlServer(), {
+      context: async ({ req }) => {
+        // @ts-ignore
+        const token = req.headers["token"];
+
+        try {
+          const user = UserService.decodeJWTToken(token as string);
+          return { user };
+        } catch (error) {
+          return {};
+        }
+      },
+    })
+  );
+
+  app.listen(PORT, () => console.log(`Server started at PORT:${PORT}`));
+}
+
+init();

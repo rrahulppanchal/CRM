@@ -1,7 +1,7 @@
 import '@mantine/core/styles.css';
 import React from 'react';
-import { MantineProvider, ColorSchemeScript } from '@mantine/core';
-import { theme } from '../theme';
+import { ColorSchemeScript } from '@mantine/core';
+import { NavbarNested } from '@/components/User/Sidebar/Sidebar';
 
 export const metadata = {
   title: 'CRM',
@@ -20,7 +20,12 @@ export default function RootLayout({ children }: { children: any }) {
         />
       </head>
       <body>
-        <MantineProvider theme={theme}>{children}</MantineProvider>
+        <header>header</header>
+        <nav>
+          <NavbarNested />
+        </nav>
+        {children}
+        <footer>footer</footer>
       </body>
     </html>
   );
